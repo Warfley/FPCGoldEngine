@@ -1,4 +1,4 @@
-unit cgtloader;
+unit cgtgrammar;
 
 {$mode ObjFPC}{$H+}
 {$ModeSwitch arrayoperators}
@@ -59,7 +59,7 @@ type
   { TCGTGrammar }
 
   TCGTGrammar = class
-  private
+  protected
     FVersion: TGrammarVersion;
     FSymbols: TGrammarSymbolTable;
     FParameter: TParameter;
@@ -68,6 +68,7 @@ type
 
     procedure Clear;
 
+  private
     function ReadHeader(Reader: TCGTReader): TGrammarVersion;
     function LexNextUnskippable(var Iterator: TUTF8Iterator): TToken; inline;
   public

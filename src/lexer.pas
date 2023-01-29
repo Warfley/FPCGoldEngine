@@ -72,7 +72,7 @@ type
   end;
 
   TSymbolType = (stNonTerminal = 0, stTerminal, stSkippable, stEOF,
-                 stGroupStart, stGroupEnd, stCommentLine);
+                 stGroupStart, stGroupEnd, stCommentLine, stError);
 
   { TGrammarSymbol }
 
@@ -154,9 +154,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure AddState(FinalResult: Integer; const Edges: TDFAEdges); inline;       
-    procedure AddCharset(const CharString: String); inline;
-    procedure AddCharset(CodePage: Integer; const Ranges: TCodePointRanges); inline;
+    procedure AddState(FinalResult: Integer; const Edges: TDFAEdges); inline;
     procedure AddCharset(Charset: TCharset); inline;
     procedure AddGroup(const AGroup: TLexicalGroup);
       inline;
@@ -500,16 +498,6 @@ end;
 procedure TDFALexer.AddState(FinalResult: Integer; const Edges: TDFAEdges);
 begin
   FStates.Add(TDFAState.Create(Self, FinalResult, Edges));
-end;
-
-procedure TDFALexer.AddCharset(const CharString: String);
-begin
-  FCharSets.Add(TStaticCharset.FromString(CharString));
-end;
-
-procedure TDFALexer.AddCharset(CodePage: Integer; const Ranges: TCodePointRanges);
-begin
-  FCharSets.Add(TRangeCharset.FromArray(Codepage, Ranges));
 end;
 
 procedure TDFALexer.AddCharset(Charset: TCharset);

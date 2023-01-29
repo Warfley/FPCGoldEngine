@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, ExtCtrls,
-  EditBtn, StdCtrls, Buttons, SynEdit, SynEditHighlighter, cgtloader, lexer, parser;
+  EditBtn, StdCtrls, Buttons, SynEdit, SynEditHighlighter, cgtgrammar, lexer, parser,
+  SimpleGrammar;
 
 type
 
@@ -22,6 +23,7 @@ type
     SynEdit1: TSynEdit;
     TreeView1: TTreeView;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -172,7 +174,6 @@ end;
 procedure TForm1.MoveToParent(Node, NewParent: TTreeNode);
 var
   NewChild: TTreeNode;
-  i: Integer;
 begin
   NewChild := TreeView1.Items.AddChild(NewParent, Node.Text);
   while Node.HasChildren do
@@ -184,13 +185,30 @@ procedure TForm1.Button1Click(Sender: TObject);
 var
   Highlighter: TSynCustomHighlighter;
 begin 
-  if not OpenDialog1.Execute then Exit;
-  SynEdit1.Lines.LoadFromFile(OpenDialog1.FileName);
-  FGrammar.LoadFromFile(FileNameEdit1.FileName);
   Highlighter := SynEdit1.Highlighter;
-  SynEdit1.Highlighter := TGrammarHighlighter.WithDFA(SynEdit1, FGrammar);
+  SynEdit1.Highlighter := nil;
   Highlighter.Free;
-  FGrammar.ParseString(SynEdit1.Text, TBuildParseTreeEvent(@ReduceNode), TBuildParseTreeLeafEvent(@LeafNode));
+  if FileNameEdit1.FileName = 'Integrated' then
+  begin       
+    FGrammar.Free;
+    FGrammar := TSimple.Create;
+  end
+  else
+    FGrammar.LoadFromFile(FileNameEdit1.FileName);
+  SynEdit1.Highlighter := TGrammarHighlighter.WithDFA(SynEdit1, FGrammar);
+  TreeView1.Items.BeginUpdate;
+  try
+    TreeView1.Items.Clear;
+    FGrammar.ParseString(SynEdit1.Text, TBuildParseTreeEvent(@ReduceNode), TBuildParseTreeLeafEvent(@LeafNode));
+  finally
+    TreeView1.Items.EndUpdate;
+  end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+    SynEdit1.Lines.LoadFromFile(OpenDialog1.FileName);
 end;
 
 end.

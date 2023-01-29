@@ -122,6 +122,8 @@ type
     procedure AddState(AState: TLRState); inline;
     procedure AddRule(const ARule: TLRRule); inline;
 
+    procedure SetInitialState(AState: Integer); inline;
+
     procedure Reset;
 
     function Step(LookAhead: TToken; const SymbolTable: TGrammarSymbolTable
@@ -245,6 +247,11 @@ end;
 procedure TLALRParser.AddRule(const ARule: TLRRule);
 begin
   FRules.Add(ARule);
+end;
+
+procedure TLALRParser.SetInitialState(AState: Integer);
+begin
+  FInitialState := AState;
 end;
 
 procedure TLALRParser.Reset;
