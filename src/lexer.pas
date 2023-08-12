@@ -326,7 +326,7 @@ end;
 
 function TGrammarSymbol.UnmangledName: String;
 begin
-  Result := Name.Substring(1, Name.Length - 2).ToLower;
+  Result := Name.Substring(1, Name.Length - 2);
 end;
 
 { TUTF8Iterator }
